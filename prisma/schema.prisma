@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id  // Google sub
+  email     String?  @unique
+  isBlocked Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prefs UserPrefs?
+  history History[]
+}
+
+model UserPrefs {
+  userId    String   @id
+  lastDays  Int      @default(7)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model History {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String   // Restaurant Name
+  rating    Float?
+  address   String?
+  url       String?  // <--- ADD THIS LINE HERE
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
